@@ -1,0 +1,84 @@
+name: U-Boot Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout U-Boot
+      uses: actions/checkout@v4
+      with:
+        path: u-boot
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          gcc \
+          gcc-aarch64-linux-gnu \
+          gcc-aarch64-none-elf \
+          bc \
+          bison \
+          build-essential \
+          coccinelle \
+          device-tree-compiler \
+          dfu-util \
+          efitools \
+          flex \
+          gdisk \
+          graphviz \
+          imagemagick \
+          libgnutls28-dev \
+          libguestfs-tools \
+          libncurses-dev \
+          libpython3-dev \
+          libsdl2-dev \
+          libssl-dev \
+          lz4 \
+          lzma \
+          lzma-alone \
+          openssl \
+          pkg-config \
+          python3 \
+          python3-asteval \
+          python3-coverage \
+          python3-filelock \
+          python3-pkg-resources \
+          python3-pycryptodome \
+          python3-pyelftools \
+          python3-pytest \
+          python3-pytest-xdist \
+          python3-sphinxcontrib.apidoc \
+          python3-sphinx-rtd-theme \
+          python3-subunit \
+          python3-testtools \
+          python3-venv \
+          swig \
+          uuid-dev
+
+    - name: Build U-Boot
+      working-directory: u-boot
+      run: |
+        export CROSS_COMPILE=aarch64-none-elf-
+        make u200_defconfig
+        make
+
+    - name: Checkout amlogic-boot-fip
+      uses: actions/checkout@v4
+      with:
+        repository: LibreELEC/amlogic-boot-fip
+        path: amlogic-boot-fip
+        depth: 1
+
+    - name: Sign U-Boot
+      run: |
+        mkdir -p signed-fip
+        ./amlogic-boot-fip/build-fip.sh u200 ${{ github.workspace }}/u-boot/u-boot.bin signed-fip
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-u-boot
+        path: signed-fip/*

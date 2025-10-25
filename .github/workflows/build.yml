@@ -9,8 +9,6 @@ jobs:
     steps:
     - name: Checkout U-Boot
       uses: actions/checkout@v4
-      with:
-        path: u-boot
 
     - name: Install dependencies
       run: |
@@ -65,7 +63,6 @@ jobs:
         echo "/opt/toolchains/arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf/bin" >> $GITHUB_PATH
 
     - name: Build U-Boot
-      working-directory: u-boot
       run: |
         export CROSS_COMPILE=aarch64-none-elf-
         make u200_defconfig
@@ -78,14 +75,10 @@ jobs:
         path: amlogic-boot-fip
         depth: 1
 
-    - name: List available boards
-      run: ls -l amlogic-boot-fip
-
     - name: Sign U-Boot
       run: |
-        # mkdir -p signed-fip
-        # ./amlogic-boot-fip/build-fip.sh u200 ${{ github.workspace }}/u-boot/u-boot.bin signed-fip
-        echo "Skipping signing to investigate board name"
+        mkdir -p signed-fip
+        ./amlogic-boot-fip/build-fip.sh u200 ${{ github.workspace }}/u-boot.bin signed-fip
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4

@@ -68,20 +68,8 @@ jobs:
         make u200_defconfig
         make
 
-    - name: Checkout amlogic-boot-fip
-      uses: actions/checkout@v4
-      with:
-        repository: LibreELEC/amlogic-boot-fip
-        path: amlogic-boot-fip
-        depth: 1
-
-    - name: Sign U-Boot
-      run: |
-        mkdir -p signed-fip
-        ./amlogic-boot-fip/build-fip.sh u200 ${{ github.workspace }}/u-boot.bin signed-fip
-
-    - name: Upload artifact
+    - name: Upload U-Boot artifact
       uses: actions/upload-artifact@v4
       with:
-        name: signed-u-boot
-        path: signed-fip/*
+        name: u-boot-binary
+        path: u-boot.bin

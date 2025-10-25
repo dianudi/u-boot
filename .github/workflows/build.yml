@@ -78,10 +78,14 @@ jobs:
         path: amlogic-boot-fip
         depth: 1
 
+    - name: List available boards
+      run: ls -l amlogic-boot-fip
+
     - name: Sign U-Boot
       run: |
-        mkdir -p signed-fip
-        ./amlogic-boot-fip/build-fip.sh u200 ${{ github.workspace }}/u-boot/u-boot.bin signed-fip
+        # mkdir -p signed-fip
+        # ./amlogic-boot-fip/build-fip.sh u200 ${{ github.workspace }}/u-boot/u-boot.bin signed-fip
+        echo "Skipping signing to investigate board name"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
